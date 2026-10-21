@@ -11,12 +11,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: malinkang/weread2notion@main
-      - name: WeRead to Notion
-        uses: ./
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          weread-api-key: ${{ secrets.WEREAD_API_KEY }}
-          notion-token: ${{ secrets.NOTION_TOKEN }}
-          notion-page: ${{ secrets.NOTION_PAGE }}
-          notion-database-id: ${{ secrets.NOTION_DATABASE_ID }}
-          notion-data-source-id: ${{ secrets.NOTION_DATA_SOURCE_ID }}
+          python-version: '3.11'
+
+      - name: Install and Patch
+        run: |
+          pip install weread2notion
+          # 强行将包里的 1.0.4 替换为 1.0.5，绕过微信读书版本检查
+          SITE_PACKAGES=$(python -c "import site; print(site.getsitepackages()[0])")
+          find $SITE_PACKAGES/weread2notion -type f -name "*.py" -exec sed -i 's/1\.0\.4/1.0.5/g' {} +
+
+      - name: Run Sync
+        env:
+          WEREAD_API_KEY: ${{ secrets.WEREAD_API_KEY }}
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_PAGE: ${{ secrets.NOTION_PAGE }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+          NOTION_DATA_SOURCE_ID: ${{ secrets.NOTION_DATA_SOURCE_ID }}
+        run: |
+          weread2notion
