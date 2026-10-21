@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: malinkang/weread2notion@main
       - name: WeRead to Notion
         uses: ./
         with:
