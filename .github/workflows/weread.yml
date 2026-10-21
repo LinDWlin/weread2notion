@@ -20,7 +20,7 @@ jobs:
 
       - name: Install and Patch
         run: |
-          pip install weread2notion
+          pip install .
           # 强行将包里的 1.0.4 替换为 1.0.5，绕过微信读书版本检查
           SITE_PACKAGES=$(python -c "import site; print(site.getsitepackages()[0])")
           find $SITE_PACKAGES/weread2notion -type f -name "*.py" -exec sed -i 's/1\.0\.4/1.0.5/g' {} +
